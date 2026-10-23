@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Truth or Shot 🔥</title>
+<style>
+*{box-sizing:border-box;margin:0;font-family:system-ui,-apple-system,sans-serif}
+body{background:linear-gradient(160deg,#1a0010,#4a0020 60%,#000);color:#fff;height:100dvh;overflow:hidden;display:flex;flex-direction:column;align-items:center;user-select:none}
+header{padding:14px;text-align:center;width:100%}
+h1{font-size:22px}#turn{margin-top:6px;font-size:18px;font-weight:700;color:#ff6b9d}
+#score{font-size:13px;opacity:.8;margin-top:4px}
+#deck{position:relative;flex:1;width:min(92vw,420px);margin:10px 0}
+.card{position:absolute;inset:0;border-radius:24px;padding:28px;display:flex;flex-direction:column;justify-content:center;text-align:center;box-shadow:0 10px 40px #0008;touch-action:none;transition:transform .3s}
+.card.truth{background:linear-gradient(150deg,#ff2e63,#a1004a)}.card.dare{background:linear-gradient(150deg,#ff8a00,#d1003f)}
+.tag{font-size:14px;letter-spacing:3px;font-weight:800;opacity:.85}.txt{font-size:26px;font-weight:700;margin:22px 0;line-height:1.3}
+.lvl{font-size:20px}.stamp{position:absolute;top:30px;font-size:30px;font-weight:900;padding:6px 14px;border:4px solid;border-radius:10px;opacity:0}
+.stamp.l{right:24px;color:#fff;transform:rotate(15deg)}.stamp.r{left:24px;color:#7dffb0;transform:rotate(-15deg)}
+.btns{display:flex;gap:14px;padding:10px 0 22px}
+button{border:0;border-radius:40px;padding:14px 20px;font-size:16px;font-weight:800;color:#fff;cursor:pointer}
+#shot{background:#333}#done{background:#18b75a}#mode button{padding:8px 14px;font-size:13px;background:#ffffff22;margin:6px 3px 0}#mode button.on{background:#ff2e63}
+#setup{position:fixed;inset:0;background:#1a0010;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:30px;z-index:9}
+#setup input{padding:14px;border-radius:14px;border:0;font-size:18px;width:260px;text-align:center}
+#setup p{opacity:.7;text-align:center;max-width:300px}
+</style></head><body>
+<div id="setup"><h1 style="font-size:34px">🔥 Truth or Shot 🥃</h1><p>Swipe right = you did it. Swipe left = you chicken out and take a shot.</p>
+<input id="p1" placeholder="Him 😈" value=""><input id="p2" placeholder="Her 💋" value="">
+<button style="background:#ff2e63" onclick="start()">LET'S GO</button></div>
+<header><h1>🔥 Truth or Shot 🥃</h1><div id="turn"></div><div id="score"></div>
+<div id="mode"><button data-m="all" class="on">Mix</button><button data-m="truth">Truths</button><button data-m="dare">Dares</button><button data-m="3">🌶️🌶️🌶️ only</button></div></header>
+<div id="deck"></div>
+<div class="btns"><button id="shot" onclick="fly(-1)">🥃 SHOT</button><button id="done" onclick="fly(1)">✅ DONE</button></div>
+<script>
+const T=[
+[1,"What was your very first impression of me — honestly?"],[1,"What's the most attractive thing I do without realizing it?"],[1,"What outfit of mine drives you the craziest?"],[1,"Which body part of mine do you look at the most?"],[1,"What's a compliment you've always wanted to give me but never did?"],[1,"When did you first want to kiss me?"],[1,"What's your favorite memory of us in bed?"],[1,"What's the most embarrassing thing that happened to you during a hookup?"],[1,"Have you ever stalked an ex on social media since we've been together?"],[1,"What's one thing you'd change about our sex life?"],
+[2,"What's your biggest turn-on that you've never told me about?"],[2,"Rate our sex life from 1 to 10 — and explain the number."],[2,"What's the dirtiest dream you've ever had about me?"],[2,"Where's the craziest place you want to do it with me?"],[2,"What's the naughtiest text you've ever sent someone?"],[2,"Have you ever faked it? Be honest."],[2,"What's a fantasy you've been too shy to ask for?"],[2,"Which celebrity would you get a free pass for?"],[2,"Have you ever fantasized about someone else while with me?"],[2,"What do I do in bed that you secretly love the most?"],[2,"What's the longest you've gone without sex — and how did you survive?"],[2,"What's your favorite position and why?"],[2,"Have you ever watched porn thinking about us? What kind?"],[2,"What's the riskiest place you've ever hooked up?"],[2,"What's one word that describes me in bed?"],[2,"Have you ever been caught in the act?"],[2,"What's something sexual you've never tried but are curious about?"],[2,"Describe in detail how you want tonight to end."],
+[3,"What's the wildest thing you've ever done sexually?"],[3,"Have you ever had a threesome — or wanted one? With who?"],[3,"What's your body count? No lying."],[3,"What's the kinkiest thing you'd let me do to you?"],[3,"Who was your best hookup before me, and what made it good?"],[3,"Have you ever thought about one of my friends that way?"],[3,"Would you ever film us? Why or why not?"],[3,"What's your secret kink nobody knows about?"],[3,"Dominant or submissive — and what does that look like for you?"],[3,"What's the most times you've done it in one day?"],[3,"Have you ever hooked up with someone you just met that same night?"],[3,"Tell me exactly what you'd do to me if we had 1 hour and no rules."],[3,"What's the dirtiest thing you've ever said during sex?"],[3,"Toys: yes or no? Which one would you want us to try?"],[3,"What's something you did with an ex that you want to do with me?"]];
+const D=[
+[1,"Give me a 30-second massage, wherever I choose."],[1,"Kiss me like it's our first kiss."],[1,"Whisper something dirty in my ear."],[1,"Do your sexiest dance for 20 seconds."],[1,"Send me the most flirty text you can — right now, sitting next to me."],[1,"Let me go through your camera roll for 30 seconds."],[1,"Bite my lip gently."],[1,"Sit on my lap until your next turn."],[1,"Show me your best seductive look for 15 seconds without laughing."],[1,"Do your best impression of me trying to seduce you."],
+[2,"Remove one piece of clothing of my choice."],[2,"Kiss my neck for 30 seconds."],[2,"Blindfold me and kiss 3 places of your choice — I guess where."],[2,"Give me a lap dance for one minute."],[2,"Take a body shot off me."],[2,"Describe what you'll do to me later, using only 10 words."],[2,"Let me tie your hands until your next turn."],[2,"Kiss me everywhere above the waist for 1 minute."],[2,"Use an ice cube on me wherever you want."],[2,"Moan my name like you mean it."],[2,"Recreate your favorite move from last time — 30 seconds."],[2,"Undress me using only your teeth for one item."],[2,"Trade one item of clothing with me."],[2,"Let me write a word anywhere on your body."],[2,"Put your hands anywhere on me for 30 seconds — no rules."],
+[3,"Strip down to underwear and stay like that for 3 turns."],[3,"Do a full striptease to a song of my choice."],[3,"Let me control your hands for 2 minutes."],[3,"Kiss me below the waist (over clothes) for 30 seconds."],[3,"Go topless for the rest of the game."],[3,"Pick a position and hold it with me for 30 seconds — clothes on."],[3,"Act out your secret fantasy for 1 minute."],[3,"Tease me for 1 minute — I can't touch you."],[3,"Close your eyes, I do whatever I want for 60 seconds."],[3,"Take off one item of mine, then one of yours."],[3,"Lick something off my body — I choose what and where."],[3,"Show me exactly how you like to be touched."],[3,"Play the next 3 rounds wearing nothing but underwear."],[3,"Send me a voice note describing your wildest fantasy — I listen out loud."],[3,"Winner's choice: whatever I say, for 2 minutes."]];
+let names=["Him","Her"],turn=0,shots=[0,0],mode="all",deck=[];
+const $=s=>document.querySelector(s);
+function start(){names=[$("#p1").value||"Him 😈",$("#p2").value||"Her 💋"];$("#setup").remove();build()}
+function build(){let a=[];if(mode!="dare")T.forEach(q=>a.push(["truth",...q]));if(mode!="truth")D.forEach(q=>a.push(["dare",...q]));if(mode=="3")a=a.filter(q=>q[1]==3);
+for(let i=a.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}
+a.sort((x,y)=>x[1]-y[1]+(Math.random()-.5)*2.2);deck=a;render()}
+function render(){$("#deck").innerHTML="";$("#turn").textContent=`${names[turn]}'s turn`;$("#score").textContent=`🥃 ${names[0]}: ${shots[0]}  ·  ${names[1]}: ${shots[1]}`;
+if(!deck.length){$("#deck").innerHTML='<div class="card truth"><div class="txt">Deck done 😏<br>Tap Mix to reshuffle</div></div>';return}
+[deck[1],deck[0]].forEach((q,i)=>{if(!q)return;const c=document.createElement("div");c.className="card "+q[0];
+c.innerHTML=`<div class="stamp r">DONE ✅</div><div class="stamp l">SHOT 🥃</div><div class="tag">${q[0].toUpperCase()}</div><div class="txt">${q[2]}</div><div class="lvl">${"🌶️".repeat(q[1])}</div>`;
+if(i==0)c.style.transform="scale(.95) translateY(10px)";else drag(c);$("#deck").appendChild(c)})}
+function drag(c){let x0=null,dx=0;c.onpointerdown=e=>{x0=e.clientX;c.style.transition="none";c.setPointerCapture(e.pointerId)};
+c.onpointermove=e=>{if(x0==null)return;dx=e.clientX-x0;c.style.transform=`translateX(${dx}px) rotate(${dx/15}deg)`;c.querySelector(".r").style.opacity=dx/100;c.querySelector(".l").style.opacity=-dx/100};
+c.onpointerup=()=>{x0=null;c.style.transition="";if(Math.abs(dx)>100)fly(dx>0?1:-1);else{c.style.transform="";c.querySelectorAll(".stamp").forEach(s=>s.style.opacity=0)}dx=0}}
+function fly(d){const c=$("#deck").lastChild;if(!deck.length||!c)return;c.style.transform=`translateX(${d*600}px) rotate(${d*30}deg)`;
+if(d<0)shots[turn]++;deck.shift();turn^=1;setTimeout(render,250)}
+document.querySelectorAll("#mode button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#mode button").forEach(x=>x.classList.remove("on"));b.classList.add("on");mode=b.dataset.m;build()});
+</script></body></html>
